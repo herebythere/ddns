@@ -40,8 +40,8 @@ An example configuration example can be found at
 {
 	"results_filepath": "./path_to_results.json",
 	"ip_services": [
-		["https://checkip.amazonaws.com/", "address_as_body"],
-		["https://api.ipify.org", "address_as_body"]
+		"https://checkip.amazonaws.com/",
+		"https://api.ipify.org"
 	]
 }
 ```
