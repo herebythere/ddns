@@ -25,7 +25,7 @@ pub async fn fetch_service_results(
         Ok(res_json) => res_json,
         Err(e) => return Err(e),
     };
-    
+
     match address_as_body::get_ip_address_from_body(&response_json).await {
         Ok(addr) => {
             let mut ip_struct = IpServiceResult::new(&ip_service);
@@ -37,7 +37,7 @@ pub async fn fetch_service_results(
     }
 }
 
-fn get_random_ip_service(ip_services: &IpServices, prev_service: &str) -> Option<(String, String)> {
+fn get_random_ip_service(ip_services: &IpServices, prev_service: &str) -> Option<String> {
     if ip_services.len() == 0 {
         return None;
     }
@@ -48,8 +48,8 @@ fn get_random_ip_service(ip_services: &IpServices, prev_service: &str) -> Option
 
     // get previous service index
     let mut prev_index = None;
-    for (index, (url, _ip_service_type)) in ip_services.iter().enumerate() {
-        if url == &prev_service {
+    for (index, url) in ip_services.iter().enumerate() {
+        if url == prev_service {
             prev_index = Some(index);
             break;
         };
