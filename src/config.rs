@@ -40,10 +40,11 @@ pub async fn from_path(file_path: &path::Path) -> Result<Config, Error> {
         }
     };
 
-    domain_services::get_environment_passwords(&mut config.domain_services);
-
     // find a way to verify the parent directory exists
     config.results_filepath = parent_dir.join(&config.results_filepath);
+
+    // replace environment variables with password values
+    domain_services::get_environment_passwords(&mut config.domain_services);
 
     Ok(config)
 }
