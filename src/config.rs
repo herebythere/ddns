@@ -3,7 +3,7 @@ use serde_json;
 use std::path;
 use tokio::fs;
 
-use crate::domain_services::{DomainServices, get_environment_passwords};
+use crate::domain_services;
 use crate::errors::Error;
 use crate::ip_services::IpServices;
 
@@ -11,7 +11,7 @@ use crate::ip_services::IpServices;
 pub struct Config {
     pub results_filepath: path::PathBuf,
     pub ip_services: IpServices,
-    pub domain_services: DomainServices,
+    pub domain_services: domain_services::DomainServices,
 }
 
 pub async fn from_path(file_path: &path::Path) -> Result<Config, Error> {
@@ -40,7 +40,7 @@ pub async fn from_path(file_path: &path::Path) -> Result<Config, Error> {
         }
     };
 
-    get_environment_passwords(&mut config.domain_services);
+    domain_services::get_environment_passwords(&mut config.domain_services);
 
     // find a way to verify the parent directory exists
     config.results_filepath = parent_dir.join(&config.results_filepath);
