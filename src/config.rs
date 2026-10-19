@@ -3,7 +3,7 @@ use serde_json;
 use std::path;
 use tokio::fs;
 
-use crate::domain_services::DomainServices;
+use crate::domain_services::{DomainServices, get_environment_passwords};
 use crate::errors::Error;
 use crate::ip_services::IpServices;
 
@@ -16,18 +16,9 @@ pub struct Config {
 
 pub async fn from_path(file_path: &path::Path) -> Result<Config, Error> {
     // get position relative to working directory
-    let config_path = match path::absolute(file_path) {
+    let config_path = match fs::canonicalize(file_path).await {
         Ok(pb) => pb,
         Err(e) => return Err(Error::Io(e.to_string())),
-    };
-
-    let parent_dir = match config_path.parent() {
-        Some(p) => p,
-        _ => {
-            return Err(Error::Custom(
-                "parent directory of config not found".to_string(),
-            ));
-        }
     };
 
     let config_json = match fs::read_to_string(&config_path).await {
@@ -40,21 +31,19 @@ pub async fn from_path(file_path: &path::Path) -> Result<Config, Error> {
         Err(e) => return Err(Error::SerdeJson(e.to_string())),
     };
 
+    let parent_dir = match config_path.parent() {
+        Some(p) => p,
+        _ => {
+            return Err(Error::Custom(
+                "parent directory of config not found".to_string(),
+            ));
+        }
+    };
+
+    get_environment_passwords(&mut config.domain_services);
+
     // find a way to verify the parent directory exists
     config.results_filepath = parent_dir.join(&config.results_filepath);
 
-    // for domains in cloudflar
-    #[cfg(feature = "cloudflare")]
-    get_cloudflare_env_passwords();
-
-    #[cfg(feature = "dyndns2")]
-    get_dyndns2_env_passwords();
-
     Ok(config)
 }
-
-#[cfg(feature = "cloudflare")]
-fn get_cloudflare_env_passwords() {}
-
-#[cfg(feature = "dyndns2")]
-fn get_dyndns2_env_passwords() {}
