@@ -59,9 +59,6 @@ pub async fn update_domains(
             }
         }
 
-        // domain.password if password.starts_with("ENV:");
-        //
-
         let domain_result = build_domain_result(&domain, ip_address).await;
         domain_results.insert(hostname, domain_result);
     }

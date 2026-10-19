@@ -43,5 +43,18 @@ pub async fn from_path(file_path: &path::Path) -> Result<Config, Error> {
     // find a way to verify the parent directory exists
     config.results_filepath = parent_dir.join(&config.results_filepath);
 
+    // for domains in cloudflar
+    #[cfg(feature = "cloudflare")]
+    get_cloudflare_env_passwords();
+
+    #[cfg(feature = "dyndns2")]
+    get_dyndns2_env_passwords();
+
     Ok(config)
 }
+
+#[cfg(feature = "cloudflare")]
+fn get_cloudflare_env_passwords() {}
+
+#[cfg(feature = "dyndns2")]
+fn get_dyndns2_env_passwords() {}
