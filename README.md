@@ -129,7 +129,8 @@ variable name as demonstrated by the following json snippet.
 
 ```json
 {
-	"password": "ENV:MY_SECRET_PASSWORD"
+	"password": "ENV:MY_SECRET_PASSWORD",
+	"api_token": "ENV:MY_API_TOKEN"
 }
 ```
 
