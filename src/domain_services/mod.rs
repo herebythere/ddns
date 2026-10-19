@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::env;
-use std::ffi::OsStr;
 
 use crate::errors::Error;
 use crate::results::{DomainResult, IpServiceResult, UpdateIpResults};
@@ -71,61 +69,10 @@ fn get_ip_address(
     ))
 }
 
-pub fn get_api_token_or_fallback_from_env(api_token: &str) -> Result<String, Error> {
-    match api_token.starts_with("ENV:") {
-        true => {
-            let key = match api_token.strip_prefix("ENV:") {
-                Some(k) => k,
-                _ => {
-                    return Err(Error::Custom(
-                        "Failed to parse env variable from domain details.".to_string(),
-                    ));
-                }
-            };
-
-            match env::var(OsStr::new(key)) {
-                Ok(token) => Ok(token),
-                _ => {
-                    return Err(Error::Custom(
-                        "Failed retrieve API key from ENV variable.".to_string(),
-                    ));
-                }
-            }
-        }
-        _ => Ok(api_token.to_string()),
-    }
-}
-
 pub fn get_environment_passwords(domain_services: &mut DomainServices) {
     #[cfg(feature = "cloudflare")]
-    get_cloudflare_env_passwords(domain_services);
+    cloudflare::get_cloudflare_env_passwords(domain_services);
 
     #[cfg(feature = "dyndns2")]
-    get_dyndns2_env_passwords(domain_services);
-}
-
-#[cfg(feature = "cloudflare")]
-fn get_cloudflare_env_passwords(domain_services: &mut DomainServices) {
-    if let Some(ref mut cloudflare) = domain_services.cloudflare {
-        for domain in cloudflare {
-            if let Some(env_password) = domain.api_token.strip_prefix("ENV:") {
-                if let Ok(val) = env::var(env_password) {
-                    domain.api_token = val;
-                }
-            }
-        }
-    }
-}
-
-#[cfg(feature = "dyndns2")]
-fn get_dyndns2_env_passwords(domain_services: &mut DomainServices) {
-    if let Some(ref mut dyndns2) = domain_services.dyndns2 {
-        for domain in dyndns2 {
-            if let Some(env_password) = domain.password.strip_prefix("ENV:") {
-                if let Ok(val) = env::var(env_password) {
-                    domain.password = val;
-                }
-            }
-        }
-    }
+    dyndns2::get_dyndns2_env_passwords(domain_services);
 }
