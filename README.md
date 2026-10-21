@@ -1,18 +1,18 @@
-# Ddnsd
+# Ddns
 
 Send ip address updates to DNS services.
 
 ## How to use
 
-The following sections describe how to install and run `ddnsd`.
+The following sections describe how to install and run `ddns`.
 
 ### Install
 
 Run the following shell commands:
 
 ```sh
-git clone https://github.com/w-lfpup/ddnsd
-cargo install --path ddnsd
+git clone https://github.com/w-lfpup/ddns
+cargo install --path ddns
 ```
 
 All services are directly related to features.
@@ -23,25 +23,25 @@ All features (and therefore all services) are included by default.
 
 Minimal installations should use the `--features` flag.
 
-For example, the following script will install `ddnsd` but only support dyndns2:
+For example, the following script will install `ddns` but only support dyndns2:
 
 ```sh
-cargo install --path ddnsd --features dyndns2
+cargo install --path ddns --features dyndns2
 ```
 
 ### Configuration
 
-The `ddnsd` application requires a valid JSON configuration to run.
+The `ddns` application requires a valid JSON configuration to run.
 
 An example configuration example can be found at
-`./ddnsd.example.json`
+`./ddns.example.json`
 
 ```JSON
 {
 	"results_filepath": "./path_to_results.json",
 	"ip_services": [
-		["https://checkip.amazonaws.com/", "address_as_body"],
-		["https://api.ipify.org", "address_as_body"]
+		"https://checkip.amazonaws.com/",
+		"https://api.ipify.org"
 	]
 }
 ```
@@ -52,21 +52,21 @@ The `results_filepath` property can be relative to the location of the `config` 
 
 The `ip_services` property defines a list of `services` with a `url` and its `response_type`.
 
-### Run ddnsd
+### Run ddns
 
-The `ddnsd` application accepts one argument defining a path to a configuration file.
+The `ddns` application accepts one argument defining a path to a configuration file.
 
 ```
-ddnsd <path_to_json_config>
+ddns <path_to_json_config>
 ```
 
-The results of the `ddnsd` will be written to the `results_filepath` property of the `config`.
+The results of the `ddns` will be written to the `results_filepath` property of the `config`.
 
 Paths can be absolute or relative to the configuration file.
 
 ## Available services
 
-The `ddnsd` application provides support for the following `services`:
+The `ddns` application provides support for the following `services`:
 
 - [dyndns2](#dyndns2)
 - [cloudflare](#cloudflare)
@@ -110,11 +110,7 @@ Use the following schema to add `cloudflare` domains to the `config`.
 			"zone_id": "string",
 			"dns_record_id": "string",
 			"api_token": "string",
-			"type": "string, record type ie: A",
-			"proxied": "bool | null",
-			"comment": "string | null",
-			"tags": "[]string | null",
-			"ttl": "number | null",
+			"type": "string, record type ie: A"
 		}]
 	}
 }
@@ -129,7 +125,8 @@ variable name as demonstrated by the following json snippet.
 
 ```json
 {
-	"password": "ENV:MY_SECRET_PASSWORD"
+	"password": "ENV:MY_SECRET_PASSWORD",
+	"api_token": "ENV:MY_API_TOKEN"
 }
 ```
 

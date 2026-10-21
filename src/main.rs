@@ -1,3 +1,4 @@
+use errors::Error;
 use std::{env, path};
 
 mod config;
@@ -6,8 +7,6 @@ mod errors;
 mod ip_services;
 mod requests;
 mod results;
-
-use errors::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {

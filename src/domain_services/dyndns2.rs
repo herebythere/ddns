@@ -7,18 +7,17 @@
     Only the 911 response body warrants a retry
 */
 
+use crate::domain_services::DomainServices;
+use crate::errors::Error;
+use crate::requests::{ResponseDetails, request_http1_tls_response};
+use crate::results::{DomainResult, UpdateIpResults};
 use base64::{Engine as _, engine::general_purpose};
 use bytes::Bytes;
 use http_body_util::Full;
 use hyper::Request;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-
-use crate::domain_services;
-use crate::domain_services::DomainServices;
-use crate::errors::Error;
-use crate::requests::{ResponseDetails, request_http1_tls_response};
-use crate::results::{DomainResult, UpdateIpResults};
+use std::env;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Dyndns2 {
@@ -58,9 +57,6 @@ pub async fn update_domains(
                 continue;
             }
         }
-
-        // domain.password if password.starts_with("ENV:");
-        //
 
         let domain_result = build_domain_result(&domain, ip_address).await;
         domain_results.insert(hostname, domain_result);
@@ -120,12 +116,7 @@ fn get_https_dyndns2_req(domain: &Dyndns2, ip_addr: &str) -> Result<Request<Full
         _ => return Err(Error::Custom("Failed to parse uri host.".to_string())),
     };
 
-    let password = match domain_services::get_api_token_or_fallback_from_env(&domain.password) {
-        Ok(token) => token,
-        Err(e) => return Err(e),
-    };
-
-    let auth_str = domain.username.to_string() + ":" + &password;
+    let auth_str = domain.username.to_string() + ":" + &domain.password;
     let auth = general_purpose::STANDARD.encode(&auth_str.as_bytes());
     let auth_value = "Basic ".to_string() + &auth;
 
@@ -138,5 +129,17 @@ fn get_https_dyndns2_req(domain: &Dyndns2, ip_addr: &str) -> Result<Request<Full
     {
         Ok(req) => Ok(req),
         Err(e) => Err(Error::Hyper(e.to_string())),
+    }
+}
+
+pub fn get_dyndns2_env_passwords(domain_services: &mut DomainServices) {
+    if let Some(ref mut dyndns2) = domain_services.dyndns2 {
+        for domain in dyndns2 {
+            if let Some(env_password) = domain.password.strip_prefix("ENV:") {
+                if let Ok(val) = env::var(env_password) {
+                    domain.password = val;
+                }
+            }
+        }
     }
 }

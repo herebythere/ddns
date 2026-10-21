@@ -1,10 +1,7 @@
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::env;
-use std::ffi::OsStr;
-
 use crate::errors::Error;
 use crate::results::{DomainResult, IpServiceResult, UpdateIpResults};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[cfg(feature = "cloudflare")]
 mod cloudflare;
@@ -71,27 +68,10 @@ fn get_ip_address(
     ))
 }
 
-pub fn get_api_token_or_fallback_from_env(api_token: &str) -> Result<String, Error> {
-    match api_token.starts_with("ENV:") {
-        true => {
-            let key = match api_token.strip_prefix("ENV:") {
-                Some(k) => k,
-                _ => {
-                    return Err(Error::Custom(
-                        "Failed to parse env variable from domain details.".to_string(),
-                    ));
-                }
-            };
+pub fn get_environment_passwords(domain_services: &mut DomainServices) {
+    #[cfg(feature = "cloudflare")]
+    cloudflare::get_cloudflare_env_passwords(domain_services);
 
-            match env::var(OsStr::new(key)) {
-                Ok(token) => Ok(token),
-                _ => {
-                    return Err(Error::Custom(
-                        "Failed retrieve API key from ENV variable.".to_string(),
-                    ));
-                }
-            }
-        }
-        _ => Ok(api_token.to_string()),
-    }
+    #[cfg(feature = "dyndns2")]
+    dyndns2::get_dyndns2_env_passwords(domain_services);
 }

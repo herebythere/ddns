@@ -1,9 +1,8 @@
-use std::net;
-
 use crate::errors::Error;
 use crate::requests::{
     ResponseDetails, create_request_with_empty_body, request_http1_tls_response,
 };
+use std::net;
 
 pub async fn request_address_as_body(service: &str) -> Result<ResponseDetails, Error> {
     let request = match create_request_with_empty_body(service) {

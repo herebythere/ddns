@@ -1,3 +1,4 @@
+use crate::errors::Error;
 use bytes::{Buf, Bytes};
 use http_body_util::{BodyExt, Full};
 use hyper::body::Incoming;
@@ -8,8 +9,6 @@ use native_tls::TlsConnector;
 use serde::{Deserialize, Serialize};
 use std::io;
 use tokio::net::TcpStream;
-
-use crate::errors::Error;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct ResponseDetails {
@@ -58,9 +57,9 @@ pub fn get_host_and_authority(uri: &Uri) -> Option<(&str, String)> {
     };
 
     let port = match (uri.port(), scheme) {
-        (Some(p), _) => p.as_u16(),
-        (None, "https") => 443,
-        _ => 80,
+        (Some(p), _) => p.to_string(),
+        (None, "https") => "443".to_string(),
+        _ => "80".to_string(),
     };
 
     let host = match uri.host() {
@@ -68,7 +67,7 @@ pub fn get_host_and_authority(uri: &Uri) -> Option<(&str, String)> {
         _ => return None,
     };
 
-    let authority = host.to_string() + ":" + &port.to_string();
+    let authority = host.to_string() + ":" + &port;
 
     Some((host, authority))
 }

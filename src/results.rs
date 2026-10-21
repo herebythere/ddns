@@ -1,10 +1,9 @@
+use crate::errors::Error;
+use crate::requests::ResponseDetails;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use tokio::fs;
-
-use crate::errors::Error;
-use crate::requests::ResponseDetails;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct IpServiceResult {

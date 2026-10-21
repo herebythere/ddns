@@ -1,11 +1,10 @@
 use crate::errors::Error;
-use rand::{Rng, thread_rng};
-
 use crate::results::{IpServiceResult, UpdateIpResults};
+use rand::{Rng, thread_rng};
 
 mod address_as_body;
 
-pub type IpServices = Vec<(String, String)>;
+pub type IpServices = Vec<String>;
 
 pub async fn fetch_service_results(
     ip_services: &IpServices,
@@ -16,27 +15,17 @@ pub async fn fetch_service_results(
         Err(e) => return Err(Error::Hyper(e.to_string())),
     };
 
-    let (ip_service, response_type) = match get_random_ip_service(ip_services, service) {
+    let ip_service = match get_random_ip_service(ip_services, service) {
         Some(r) => r,
         _ => return Err(Error::Custom("failed to find ip service".to_string())),
     };
 
-    let response_json_results = match response_type {
-        // there could be json responses
-        _ => address_as_body::request_address_as_body(&ip_service).await,
-    };
-
-    let response_json = match response_json_results {
+    let response_json = match address_as_body::request_address_as_body(&ip_service).await {
         Ok(res_json) => res_json,
         Err(e) => return Err(e),
     };
 
-    // there could be json responses
-    let ip_address = match response_type {
-        _ => address_as_body::get_ip_address_from_body(&response_json).await,
-    };
-
-    match ip_address {
+    match address_as_body::get_ip_address_from_body(&response_json).await {
         Ok(addr) => {
             let mut ip_struct = IpServiceResult::new(&ip_service);
             ip_struct.response = Some(response_json);
@@ -47,7 +36,7 @@ pub async fn fetch_service_results(
     }
 }
 
-fn get_random_ip_service(ip_services: &IpServices, prev_service: &str) -> Option<(String, String)> {
+fn get_random_ip_service(ip_services: &IpServices, prev_service: &str) -> Option<String> {
     if ip_services.len() == 0 {
         return None;
     }
@@ -58,8 +47,8 @@ fn get_random_ip_service(ip_services: &IpServices, prev_service: &str) -> Option
 
     // get previous service index
     let mut prev_index = None;
-    for (index, (url, _ip_service_type)) in ip_services.iter().enumerate() {
-        if url == &prev_service {
+    for (index, url) in ip_services.iter().enumerate() {
+        if url == prev_service {
             prev_index = Some(index);
             break;
         };

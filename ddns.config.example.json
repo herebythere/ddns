@@ -1,0 +1,23 @@
+{
+	"results_filepath": "./path_to_results.json",
+	"ip_services": [
+		"https://checkip.amazonaws.com/",
+		"https://api.ipify.org"
+	],
+	"domain_services": {
+		"cloudflare": [{
+			"name": "yourdomain.com",
+			"email": "string",
+			"zone_id": "string",
+			"dns_record_id": "string",
+			"api_token": "string",
+			"type": "string, record type ie: A"
+		}],
+		"dyndns2": [{
+			"service_uri": "http://ddns.service.com",
+			"hostname": "mydomain.com",
+			"username": "username",
+			"password": "secret_password"
+		}]
+	}
+}
