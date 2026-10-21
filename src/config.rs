@@ -1,11 +1,10 @@
+use crate::domain_services;
+use crate::errors::Error;
+use crate::ip_services::IpServices;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::path;
 use tokio::fs;
-
-use crate::domain_services;
-use crate::errors::Error;
-use crate::ip_services::IpServices;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Config {

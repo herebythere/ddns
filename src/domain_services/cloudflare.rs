@@ -5,17 +5,16 @@ PATCH Request
 Only update changed parameters
 */
 
+use crate::domain_services::DomainServices;
+use crate::errors::Error;
+use crate::requests::{ResponseDetails, request_http1_tls_response};
+use crate::results::{DomainResult, UpdateIpResults};
 use bytes::Bytes;
 use http_body_util::Full;
 use hyper::Request;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::env;
-
-use crate::domain_services::DomainServices;
-use crate::errors::Error;
-use crate::requests::{ResponseDetails, request_http1_tls_response};
-use crate::results::{DomainResult, UpdateIpResults};
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Cloudflare {

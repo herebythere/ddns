@@ -1,8 +1,7 @@
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-
 use crate::errors::Error;
 use crate::results::{DomainResult, IpServiceResult, UpdateIpResults};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[cfg(feature = "cloudflare")]
 mod cloudflare;

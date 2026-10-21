@@ -1,7 +1,6 @@
 use crate::errors::Error;
-use rand::{Rng, thread_rng};
-
 use crate::results::{IpServiceResult, UpdateIpResults};
+use rand::{Rng, thread_rng};
 
 mod address_as_body;
 
