@@ -22,7 +22,7 @@ pub async fn request_http1_tls_response(
     let (host, authority) = match get_host_and_authority(&req.uri()) {
         Some(stream) => stream,
         _ => {
-            return Err(Error::Custom(
+            return Err(Error::Request(
                 "failed to get authority from uri".to_string(),
             ));
         }
@@ -35,7 +35,7 @@ pub async fn request_http1_tls_response(
 
     let (mut sender, conn) = match http1::handshake(io).await {
         Ok(handshake) => handshake,
-        Err(e) => return Err(Error::Custom(e.to_string())),
+        Err(e) => return Err(Error::Request(e.to_string())),
     };
 
     tokio::task::spawn(async move {
@@ -44,7 +44,7 @@ pub async fn request_http1_tls_response(
 
     let res = match sender.send_request(req).await {
         Ok(res) => res,
-        Err(e) => return Err(Error::Custom(e.to_string())),
+        Err(e) => return Err(Error::Request(e.to_string())),
     };
 
     convert_response_to_json_struct(res).await
@@ -128,12 +128,12 @@ async fn response_body_to_string(response: Response<Incoming>) -> Result<String,
 pub fn create_request_with_empty_body(url_string: &str) -> Result<Request<Full<Bytes>>, Error> {
     let uri = match hyper::Uri::try_from(url_string) {
         Ok(u) => u,
-        Err(_) => return Err(Error::Custom("Invalid Uri".to_string())),
+        Err(_) => return Err(Error::Request("Invalid Uri found".to_string())),
     };
 
     let (_, authority) = match get_host_and_authority(&uri) {
         Some(u) => u.clone(),
-        _ => return Err(Error::Custom("authority not found in url".to_string())),
+        _ => return Err(Error::Request("Authority not found in url".to_string())),
     };
 
     let req = match Request::builder()

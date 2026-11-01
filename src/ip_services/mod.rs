@@ -17,7 +17,11 @@ pub async fn fetch_service_results(
 
     let ip_service = match get_random_ip_service(ip_services, service) {
         Some(r) => r,
-        _ => return Err(Error::Custom("failed to find ip service".to_string())),
+        _ => {
+            return Err(Error::IpService(
+                "failed to select an ip service".to_string(),
+            ));
+        }
     };
 
     let response_json = match address_as_body::request_address_as_body(&ip_service).await {

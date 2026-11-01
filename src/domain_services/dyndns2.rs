@@ -113,7 +113,11 @@ fn get_https_dyndns2_req(domain: &Dyndns2, ip_addr: &str) -> Result<Request<Full
 
     let host = match uri.host() {
         Some(u) => u.to_string(),
-        _ => return Err(Error::Custom("Failed to parse uri host.".to_string())),
+        _ => {
+            return Err(Error::DomainService(
+                "Failed to parse uri host for dyndns2 attempt.".to_string(),
+            ));
+        }
     };
 
     let auth_str = domain.username.to_string() + ":" + &domain.password;

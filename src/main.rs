@@ -13,7 +13,7 @@ async fn main() -> Result<(), Error> {
     let filepath_str = match env::args().nth(1) {
         Some(a) => a,
         None => {
-            return Err(Error::Custom(
+            return Err(Error::Config(
                 "argument error:\nconfig file not found.".to_string(),
             ));
         }

@@ -16,13 +16,13 @@ pub async fn request_address_as_body(service: &str) -> Result<ResponseDetails, E
     }
 }
 
-pub async fn get_ip_address_from_body(response_json: &ResponseDetails) -> Result<String, Error> {
-    if response_json.status_code != 200 {
-        return Err(Error::Custom("response_json was not okay".to_string()));
+pub async fn get_ip_address_from_body(response_body: &ResponseDetails) -> Result<String, Error> {
+    if response_body.status_code != 200 {
+        return Err(Error::IpService("Response body was not okay".to_string()));
     }
 
     // set address if request is successful
-    let ip_address = match response_json.body.trim().parse::<net::IpAddr>() {
+    let ip_address = match response_body.body.trim().parse::<net::IpAddr>() {
         Ok(ip) => ip.to_string(),
         Err(e) => return Err(Error::IpAddr(e.to_string())),
     };
