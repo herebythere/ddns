@@ -59,7 +59,7 @@ impl UpdateIpResults {
             });
         }
 
-        Err(Error::Custom("couldn't get results".to_string()))
+        Err(Error::Results("Failed to retrieve results".to_string()))
     }
 }
 

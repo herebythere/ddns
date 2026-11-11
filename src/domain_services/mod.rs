@@ -63,8 +63,8 @@ fn get_ip_address(
         }
     }
 
-    Err(Error::Custom(
-        "there are no ip addresses to update".to_string(),
+    Err(Error::DomainService(
+        "Failed to receive an ip addresses to update".to_string(),
     ))
 }
 

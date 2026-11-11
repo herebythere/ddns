@@ -33,7 +33,7 @@ pub async fn from_path(file_path: &path::Path) -> Result<Config, Error> {
     let parent_dir = match config_path.parent() {
         Some(p) => p,
         _ => {
-            return Err(Error::Custom(
+            return Err(Error::Config(
                 "parent directory of config not found".to_string(),
             ));
         }
