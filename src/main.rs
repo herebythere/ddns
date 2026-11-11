@@ -14,7 +14,7 @@ async fn main() -> Result<(), Error> {
         Some(a) => a,
         None => {
             return Err(Error::Config(
-                "argument error:\nconfig file not found.".to_string(),
+                "Filepath missing at argv[0].".to_string(),
             ));
         }
     };
